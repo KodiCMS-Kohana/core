@@ -81,7 +81,7 @@ class Kohana_Database_Helper {
 		$schema = '';
 
 		// Create a new directory iterator
-		$path = new DirectoryIterator(MODPATH);
+		$path = new DirectoryIterator(CMS_MODPATH);
 
 		foreach ($path as $dir)
 		{
@@ -90,7 +90,7 @@ class Kohana_Database_Helper {
 				continue;
 			}
 	
-			$file_name = MODPATH . $dir->getBasename() . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . 'schema.sql';
+			$file_name = CMS_MODPATH . $dir->getBasename() . DIRECTORY_SEPARATOR . 'install' . DIRECTORY_SEPARATOR . 'schema.sql';
 			if (file_exists($file_name))
 			{
 				$schema .= file_get_contents($file_name);
