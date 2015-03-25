@@ -47,10 +47,5 @@
 		"kodicms/scheduler"			: "@dev",
 		"kodicms/hybrid"			: "@dev",
 		"php"						: ">=5.3.3"
-	},
-	"extra": {
-		"installer-paths": {
-			"cms/modules/{$name}": ["type:kodicms-module"]
-		}
 	}
 }
