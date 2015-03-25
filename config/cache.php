@@ -5,7 +5,7 @@ return array
 	
 	'file'    => array(
 		'driver'             => 'File',
-		'cache_dir'          =>  CMSPATH . 'cache',
+		'cache_dir'          => STORAGEPATH . 'cache',
 		'default_expire'     => 3600,
 		'ignore_on_delete'   => array(
 			'.gitignore',
@@ -16,7 +16,7 @@ return array
 	'sqlite'   => array(
 		'driver'             => 'Sqlite',
 		'default_expire'     => 3600,
-		'database'           => CMSPATH.'cache/kohana-cache.sql3',
+		'database'			 => STORAGEPATH . 'cache/kohana-cache.sql3',
 		'schema'             => 'CREATE TABLE caches(id VARCHAR(127) PRIMARY KEY, tags VARCHAR(255), expiration INTEGER, cache TEXT)',
 	),
 	'apc'      => array(
