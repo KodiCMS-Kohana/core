@@ -38,7 +38,7 @@
 		"kodicms/page_parts"		: "@dev",
 		"kodicms/plugins"			: "@dev",
 		"kodicms/update"			: "@dev",
-		"kodicms/widgets"			: "@dev",
+		"kodicms/widget"			: "@dev",
 		"kodicms/snippet"			: "@dev",
 		"kodicms/users"				: "@dev",
 		"kodicms/search"			: "@dev",
