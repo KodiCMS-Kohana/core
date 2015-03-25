@@ -1,0 +1,32 @@
+{
+	"name":        "KodiCMS/core",
+	"type":        "kodicms-module",
+	"description": "The official KodiCMS core module",
+	"homepage":    "http://www.kodicms.ru/",
+	"license":     "BSD-3-Clause",
+	"keywords":    ["kohana", "framework", "kodicms", "cms", "module", "core"],
+	"authors": [
+		{
+			"name":     "Pavel Buchnev",
+			"email":    "butschster@gmail.com",
+			"homepage": "http://www.kodicms.ru/",
+			"role":     "developer"
+		}
+	],
+	"support": {
+		"issues":   "https://github.com/KodiCMS/core/issues",
+		"forum":    "http://www.kodicms.ru/forum",
+		"source":   "https://github.com/KodiCMS/core"
+	},
+	"require": {
+		"composer/installers": "~1.0",
+		"kohana/core"		: "3.3.*",
+		"kohana/database"   : "3.3.*",
+		"kohana/orm"        : "3.3.*",
+		"kohana/cache"      : "3.3.*",
+		"kohana/image"      : "3.3.*",
+		"kohana/minion"     : "3.3.*",
+		"kohana/auth"     	: "3.3.*",
+		"php"				: ">=5.3.3"
+	}
+}
