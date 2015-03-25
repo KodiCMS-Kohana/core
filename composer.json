@@ -19,14 +19,32 @@
 		"source":   "https://github.com/KodiCMS/core"
 	},
 	"require": {
-		"composer/installers": "~1.0",
-		"kohana/core"		: "3.3.*",
-		"kohana/database"   : "3.3.*",
-		"kohana/orm"        : "3.3.*",
-		"kohana/cache"      : "3.3.*",
-		"kohana/image"      : "3.3.*",
-		"kohana/minion"     : "3.3.*",
-		"kohana/auth"     	: "3.3.*",
-		"php"				: ">=5.3.3"
+		"kohana/core"				: "3.3.*",
+		"kohana/database"   		: "3.3.*",
+		"kohana/orm"        		: "3.3.*",
+		"kohana/cache"      		: "3.3.*",
+		"kohana/image"      		: "3.3.*",
+		"kohana/minion"     		: "3.3.*",
+		"kohana/auth"     			: "3.3.*",
+		
+		"kodicms/api"				: "dev-master",
+		"kodicms/dashboard"			: "dev-master",
+		"kodicms/datasource"		: "dev-master",
+		"kodicms/email"				: "dev-master",
+		"kodicms/elfinder"			: "dev-master",
+		"kodicms/installer"			: "dev-master",
+		"kodicms/pages"				: "dev-master",
+		"kodicms/logs"				: "dev-master",
+		"kodicms/page_parts"		: "dev-master",
+		"kodicms/plugins"			: "dev-master",
+		"kodicms/update"			: "dev-master",
+		"kodicms/widgets"			: "dev-master",
+		"kodicms/snippet"			: "dev-master",
+		"kodicms/users"				: "dev-master",
+		"kodicms/search"			: "dev-master",
+		"kodicms/tags"				: "dev-master",
+		"kodicms/breadcrumbs"		: "dev-master",
+		"kodicms/scheduler"			: "dev-master",
+		"php"						: ">=5.3.3"
 	}
 }
