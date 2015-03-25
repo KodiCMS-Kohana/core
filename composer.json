@@ -45,6 +45,7 @@
 		"kodicms/tags"				: "@dev",
 		"kodicms/breadcrumbs"		: "@dev",
 		"kodicms/scheduler"			: "@dev",
+		"kodicms/hybrid"			: "@dev",
 		"php"						: ">=5.3.3"
 	},
 	"extra": {
