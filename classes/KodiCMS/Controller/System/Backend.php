@@ -77,7 +77,7 @@ class KodiCMS_Controller_System_Backend extends Controller_System_Template
 			
 			if (file_exists($filename))
 			{
-				Assets::js('i18n', BASE_URL . 'cms/cache/i18n/' . I18n::lang() . $file_name, 'global', FALSE, 0);
+				Assets::js('i18n', BASE_URL . 'cms/storage/cache/i18n/' . I18n::lang() . $file_name, 'global', FALSE, 0);
 			}
 		}
 
