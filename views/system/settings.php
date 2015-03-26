@@ -148,7 +148,7 @@
 		<?php endif; ?>
 
 		<div class="note note-warning">
-			<?php echo UI::icon('lightbulb-o fa-lg'); ?> <?php echo __('The session storage driver can change in the config file (:path)', array(':path' => CFGFATH)); ?>
+			<?php echo UI::icon('lightbulb-o fa-lg'); ?> <?php echo __('The session storage driver can change in the config file (:path)', array(':path' => CONFIG_FILE)); ?>
 		</div>
 
 		<div class="form-group">
