@@ -18,23 +18,33 @@ class Task_Vendor_Publish extends Minion_Task
 		$source = CMS_MODPATH . 'core' . DIRECTORY_SEPARATOR . 'config';
 		$dest = CMSPATH . 'application' . DIRECTORY_SEPARATOR . 'config';
 		
+		$exclude = ['auth', 'behaviors', 'breadcrumbs', 'cache', 'database', 'icons', 'permissions', 'somilar', 'sitemap'];
+		
+		$exclude = array_map(function($elm) {
+			return $elm . EXT;			
+		}, $exclude);
+		
 		if (!is_dir($dest))
 		{
 			mkdir($dest, 0755);
 		}
 
-		$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
+		$iterator = new \DirectoryIterator($source);
 		foreach ($iterator as $item)
 		{
-			$file = $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
+			if ($item->isDir() OR $item->isDot() OR in_array($item->getBasename(), $exclude))
+			{
+				continue;
+			}
+
+			$file = $dest . DIRECTORY_SEPARATOR . $item->getBasename();
 			if (file_exists($file))
 			{
 				continue;
 			}
 
-			copy($item, $file);
+			copy($source . DIRECTORY_SEPARATOR . $item->getBasename(), $file);
+			Minion_CLI::write(__('Config files :name published', [':name' => $item->getBasename()]));
 		}
-		
-		Minion_CLI::write('============ Config files published ==========');
 	}
 }
