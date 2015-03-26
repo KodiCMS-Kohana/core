@@ -40,5 +40,14 @@ return array(
 			'action' => 'phpinfo',
 			'description' => 'View PHP info'
 		),
+		
+		array(
+			'action' => 'cache.settings',
+			'description' => 'View cache settings'
+		),
+		array(
+			'action' => 'cache.clear',
+			'description' => 'Clear cache'
+		),
 	),
 );
