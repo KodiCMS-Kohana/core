@@ -30,6 +30,8 @@
 		"kohana/image"      		: "3.3.*",
 		"kohana/minion"     		: "3.3.*",
 		"kohana/auth"     			: "3.3.*",
+
+		"fuelphp/dependency"		: "2.0.0",
 		
 		"kodicms/api"				: "dev-psr_4",
 		"kodicms/dashboard"			: "dev-psr_4",
