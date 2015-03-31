@@ -24,7 +24,6 @@
 		}
 	},
 	"require": {
-		"kohana/core"				: "3.3.*",
 		"kohana/database"   		: "3.3.*",
 		"kohana/orm"        		: "3.3.*",
 		"kohana/cache"      		: "3.3.*",
@@ -32,25 +31,44 @@
 		"kohana/minion"     		: "3.3.*",
 		"kohana/auth"     			: "3.3.*",
 		
-		"kodicms/api"				: "@dev",
-		"kodicms/dashboard"			: "@dev",
-		"kodicms/datasource"		: "@dev",
-		"kodicms/email"				: "@dev",
-		"kodicms/elfinder"			: "@dev",
-		"kodicms/installer"			: "@dev",
-		"kodicms/pages"				: "@dev",
-		"kodicms/logs"				: "@dev",
-		"kodicms/page_parts"		: "@dev",
-		"kodicms/plugins"			: "@dev",
-		"kodicms/update"			: "@dev",
-		"kodicms/widget"			: "@dev",
-		"kodicms/snippet"			: "@dev",
-		"kodicms/users"				: "@dev",
-		"kodicms/search"			: "@dev",
-		"kodicms/tags"				: "@dev",
-		"kodicms/breadcrumbs"		: "@dev",
-		"kodicms/scheduler"			: "@dev",
-		"kodicms/hybrid"			: "@dev",
+		"kodicms/api"				: "dev-psr_4",
+		"kodicms/dashboard"			: "dev-psr_4",
+		"kodicms/datasource"		: "dev-psr_4",
+		"kodicms/email"				: "dev-psr_4",
+		"kodicms/elfinder"			: "dev-psr_4",
+		"kodicms/installer"			: "dev-psr_4",
+		"kodicms/pages"				: "dev-psr_4",
+		"kodicms/logs"				: "dev-psr_4",
+		"kodicms/page_parts"		: "dev-psr_4",
+		"kodicms/plugins"			: "dev-psr_4",
+		"kodicms/update"			: "dev-psr_4",
+		"kodicms/widget"			: "dev-psr_4",
+		"kodicms/snippet"			: "dev-psr_4",
+		"kodicms/users"				: "dev-psr_4",
+		"kodicms/search"			: "dev-psr_4",
+		"kodicms/tags"				: "dev-psr_4",
+		"kodicms/breadcrumbs"		: "dev-psr_4",
+		"kodicms/scheduler"			: "dev-psr_4",
+		"kodicms/hybrid"			: "dev-psr_4",
 		"php"						: ">=5.3.3"
-	}
+	},
+	"repositories": [
+		{
+			"type": "package",
+			"package": {
+				"name": "KodiCMS/core54",
+				"version": "dev-master",
+				"source": {
+					"url": "https://github.com/KodiCMS/core54.git",
+					"type": "git",
+					"reference": "psr-4/develop"
+				},
+				"autoload": {
+					"psr-4": {
+						"Kohana\\Core\\": "classes"
+					}
+				}
+			}
+		}
+	]
 }
