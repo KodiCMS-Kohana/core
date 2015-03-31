@@ -1,4 +1,7 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php namespace KodiCMS\Core\Assets;
+
+use Kohana\Core\Arr;
+use Kohana\Core\HTML;
 
 /**
  * @package		KodiCMS/Assets
@@ -7,20 +10,19 @@
  * @copyright  (c) 2012-2014 butschster
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
  */
-class Assets_Package implements Iterator {
+class Package implements \Iterator {
 	
-	protected static $_list = array();
+	protected static $_list = [];
 
 	/**
 	 * Добавление пакета
-	 * 
-	 * @param string $name
-	 * @param array $sources
-	 * @return \Assets_Package
+	 *
+	 * @param $name
+	 * @return static
 	 */
 	public static function add($name)
 	{
-		return new Assets_Package($name);
+		return new static($name);
 	}
 	
 	/**
@@ -31,7 +33,7 @@ class Assets_Package implements Iterator {
 	 */
 	public static function load($name)
 	{
-		return Arr::get(Assets_Package::$_list, $name);
+		return Arr::get(static::$_list, $name);
 	}
 	
 	/**
@@ -41,26 +43,26 @@ class Assets_Package implements Iterator {
 	 */
 	public static function get_all()
 	{
-		return Assets_Package::$_list;
+		return static::$_list;
 	}
 	
 	/**
 	 * 
-	 * @param string|array $name
+	 * @param string,array $name
 	 * @return array
 	 */
 	public static function get_scripts($names)
 	{
 		if (!is_array($names))
 		{
-			$names = array($names);
+			$names = [$names];
 		}
 		
-		$scripts = array();
+		$scripts = [];
 		
 		foreach ($names as $name)
 		{
-			$package = Assets_Package::load($name);
+			$package = static::load($name);
 
 			if ($package === NULL)
 			{
@@ -87,7 +89,7 @@ class Assets_Package implements Iterator {
 	 */
 	public static function select_choises()
 	{
-		$options = array_keys(Assets_Package::$_list);
+		$options = array_keys(static::$_list);
 		return array_combine($options, $options);
 	}
 
@@ -102,7 +104,7 @@ class Assets_Package implements Iterator {
 	 *
 	 * @var array 
 	 */
-	protected $_data = array();
+	protected $_data = [];
 	
 	/**
 	 *
@@ -111,19 +113,20 @@ class Assets_Package implements Iterator {
 	private $position = 0;
 
 	/**
-	 * 
-	 * @param string $name
-	 * @param array $sources
+	 * @param $handle
 	 */
 	public function __construct($handle)
 	{
 		$this->_handle = $handle;
-		Assets_Package::$_list[$handle] = $this;
+		static::$_list[$handle] = $this;
 	}
-	
+
 	/**
-	 * 
-	 * @return array
+	 * @param null $handle
+	 * @param null $src
+	 * @param null $deps
+	 * @param null $attrs
+	 * @return $this
 	 */
 	public function css($handle = NULL, $src = NULL, $deps = NULL, $attrs = NULL)
 	{
@@ -138,21 +141,24 @@ class Assets_Package implements Iterator {
 			$attrs['media'] = 'all';
 		}
 		
-		$this->_data[] = array(
+		$this->_data[] = [
 			'type'	=> 'css',
 			'src'   => $src,
 			'deps'  => (array) $deps,
 			'attrs' => $attrs,
 			'handle' => $handle,
 			'type' => 'css'
-		);
+		];
 		
 		return $this;
 	}
 
 	/**
-	 * 
-	 * @return array
+	 * @param bool $handle
+	 * @param null $src
+	 * @param null $deps
+	 * @param bool $footer
+	 * @return $this
 	 */
 	public function js($handle = FALSE, $src = NULL, $deps = NULL, $footer = FALSE)
 	{
@@ -161,18 +167,21 @@ class Assets_Package implements Iterator {
 			$handle = $this->_handle;
 		}
 		
-		$this->_data[] = array(
+		$this->_data[] = [
 			'type'	=> 'js',
 			'src'    => $src,
 			'deps'   => (array) $deps,
 			'footer' => $footer,
 			'handle' => $handle,
 			'type' => 'js'
-		);
+		];
 		
 		return $this;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString()
 	{
 		$string = '';

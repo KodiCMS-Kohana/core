@@ -1,5 +1,9 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
+use KodiCMS\Core\Assets\Package as Assets_Package;
+use \KodiCMS\Core\WYSIWYG;
+use \KodiCMS\Core\Cache;
+
 Assets_Package::add('core')
 	->css('global', ADMIN_RESOURCES . 'css/common.css')
 	->js(NULL, ADMIN_RESOURCES . 'js/core.min.js', 'backbone')

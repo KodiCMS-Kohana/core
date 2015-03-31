@@ -1,9 +1,8 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
-
+<?php
 /**
  * PDO database connection.
  *
- * @package    Kohana/Database
+ * @package    Ohanzee/Database
  * @category   Drivers
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team

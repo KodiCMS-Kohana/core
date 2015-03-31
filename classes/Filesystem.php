@@ -1,4 +1,8 @@
-<?php defined( 'SYSPATH' ) or die( 'No direct access allowed.' );
+<?php namespace KodiCMS\Core;
+
+use Kohana\Core\Arr;
+use Kohana\Core\Exception;
+use Kohana\Core\Text;
 
 /**
  * @package		KodiCMS/FileSystem
@@ -9,7 +13,7 @@
  */
 class FileSystem {
 	
-	protected static $_cache = array();
+	protected static $_cache = [];
 
 		/**
 	 * 
@@ -18,7 +22,7 @@ class FileSystem {
 	 */
 	public static function normalize_path($path)
 	{
-		return str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+		return str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
 	}
 
 	/**
@@ -29,7 +33,7 @@ class FileSystem {
 	public static function filter_name($name)
 	{
 		$name = preg_replace('/[^a-zA-Z0-9\-\_]/', '-', strtolower(Text::translit($name)));
-		foreach (array('-', '_', '\.') as $separator)
+		foreach (['-', '_', '\.'] as $separator)
 		{
 			$name = preg_replace('/' . $separator . '+/', trim($separator, '\\'), $name);
 		}
@@ -50,7 +54,7 @@ class FileSystem {
 			return self::$_cache[$directory][$file];
 		}
 
-		$array = array();
+		$array = [];
 
 		if ($files = Kohana::find_file($directory, $file, NULL, TRUE))
 		{
@@ -92,14 +96,13 @@ class FileSystem {
 	protected $_real_path;
 
 	/**
-	 * 
-	 * @param string|SplFileInfo $file
-	 * @return \FileSystem|\FileSystem_File|\FileSystem_Directory
+	 * @param $path
+	 * @return FileSystem
 	 * @throws Kohana_Exception
 	 */
 	public static function factory($path)
 	{
-		if (!($path instanceof SplFileInfo))
+		if (!($path instanceof \SplFileInfo))
 		{
 			$path = FileSystem::normalize_path($path);
 
@@ -107,29 +110,28 @@ class FileSystem {
 			{
 				if (!is_dir($path))
 				{
-					$path = new FileSystem_File($path);
+					$path = new FileSystem\File($path);
 				}
 				else
 				{
-					$path = new FileSystem_Directory($path);
+					$path = new FileSystem\Directory($path);
 				}
 			}
 			else
 			{
-				throw new Kohana_Exception('Directory or file :path not found', array(
+				throw new Exception('Directory or file :path not found', [
 					':path' => $path
-				));
+				]);
 			}
 		}
 
-		return new FileSystem($path);
+		return new self($path);
 	}
 
 	/**
-	 * 
-	 * @param SplFileInfo $file
+	 * @param \SplFileInfo $file
 	 */
-	public function __construct(SplFileInfo $file)
+	public function __construct(\SplFileInfo $file)
 	{
 		$this->_file = $file;
 
@@ -154,11 +156,11 @@ class FileSystem {
 		}
 	}
 
-	public function __call($method, $arguments = array())
+	public function __call($method, $arguments = [])
 	{
 		if (method_exists($this->_file, $method))
 		{
-			return call_user_func_array(array($this->_file, $method), $arguments);
+			return call_user_func_array([$this->_file, $method], $arguments);
 		}
 	}
 
@@ -241,7 +243,7 @@ class FileSystem {
 	 */
 	public function getUrl()
 	{
-		return BASE_URL . str_replace(array('/', '\\'), '/', $this->getRelativePath());
+		return BASE_URL . str_replace(['/', '\\'], '/', $this->getRelativePath());
 	}
 	
 	/**
@@ -262,7 +264,7 @@ class FileSystem {
 		$dirs_array = explode(DIRECTORY_SEPARATOR, $this->getRelativePath());
 		$path = '';
 		$dirs_count = count($dirs_array);
-		$paths_array = array();
+		$paths_array = [];
 
 		for ($i = 0; $i < $dirs_count; ++$i)
 		{
@@ -293,7 +295,7 @@ class FileSystem {
 	{
 		if (rename($this->_real_path, $this->_path . DIRECTORY_SEPARATOR . $name))
 		{
-			return FileSystem::factory($this->_path . DIRECTORY_SEPARATOR . $name);
+			return self::factory($this->_path . DIRECTORY_SEPARATOR . $name);
 		}
 		
 		return FALSE;
@@ -316,7 +318,7 @@ class FileSystem {
 	 */
 	public function iteratePaths( $ext = NULL )
     {
-		$array = array();
+		$array = [];
 
 		while ($this->_file->valid())
 		{
@@ -327,7 +329,7 @@ class FileSystem {
 				continue;
 			}
 
-			$array[] = new FileSystem(clone($this->_file));
+			$array[] = new self(clone($this->_file));
 			$this->_file->next();
 		}
 		

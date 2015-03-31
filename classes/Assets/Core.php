@@ -1,4 +1,10 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php namespace KodiCMS\Core\Assets;
+
+use KodiCMS\Core\Cache;
+use KodiCMS\Core\FileSystem;
+use KodiCMS\Core\URL;
+use Kohana\Core\HTML;
+
 /**
  * Allows assets (CSS, Javascript, etc.) to be included throughout the application, and then outputted later based on dependencies.
  * This makes sure all assets will be included in the correct order, no matter what order they are defined in.
@@ -7,14 +13,14 @@
  *     Assets::css('global', 'assets/css/global.css', array('grid', 'reset'), array('media' => 'screen'));
  *     Assets::css('reset', 'assets/css/reset.css');
  *     Assets::css('grid', 'assets/css/grid.css', 'reset');
- *     
+ *
  *     Assets::js('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js');
  *     Assets::js('global', 'assets/js/global.js', array('jquery'));
  *     Assets::js('stats', 'assets/js/stats.js', NULL, TRUE);
- *     
+ *
  *     Assets::group('head', 'keywords', '<meta name="keywords" content="one,two,three,four,five" />');
  *     Assets::group('head', 'description', '<meta name="description" content="Description of webpage here" />');
- *     
+ *
  *     // In your view file
  *     <html>
  *         <head>
@@ -29,74 +35,71 @@
  *         </body>
  *     </html>
  *
- * @package		KodiCMS/Assets
- * @author		Corey Worrell
- * @author		butschster <butschster@gmail.com>
- * @version		1.0
- * @link		http://kodicms.ru
+ * @package        KodiCMS/Assets
+ * @author        Corey Worrell
+ * @author        butschster <butschster@gmail.com>
+ * @version        1.0
+ * @link        http://kodicms.ru
  * @copyright  (c) 2012-2014 butschster
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
  */
-class Assets_Core {
+class Core
+{
 
 	/**
 	 * @var  array  CSS assets
 	 */
-	public static $css = array();
-	
+	public static $css = [];
+
 	/**
 	 *
-	 * @var array  Javascript assets to minify 
+	 * @var array  Javascript assets to minify
 	 */
-	protected static $_css_minify = array();
-	
-	
+	protected static $_css_minify = [];
+
+
 	/**
 	 * @var  array  Javascript assets
 	 */
-	public static $js = array();
-	
+	public static $js = [];
+
 	/**
 	 *
-	 * @var array  Javascript assets to minify 
+	 * @var array  Javascript assets to minify
 	 */
-	protected static $_js_minify = array();
-	
+	protected static $_js_minify = [];
+
 	/**
 	 * @var  array  Other asset groups (meta data, links, etc...)
 	 */
-	public static $groups = array();
-	
+	public static $groups = [];
+
 	/**
-	 * 
+	 *
 	 * @param string|array $names
 	 * @param boolean $footer
 	 * @return boolean
 	 */
 	public static function package($names, $footer = FALSE)
 	{
-		if (!is_array($names))
-		{
-			$names = array($names);
+		if (!is_array($names)) {
+			$names = [$names];
 		}
 
-		foreach ($names as $name)
-		{
-			$package = Assets_Package::load($name);
+		foreach ($names as $name) {
+			$package = Package::load($name);
 
 			if ($package === NULL)
 				continue;
 
-			foreach ($package as $item)
-			{
-				switch ($item['type'])
-				{
+			foreach ($package as $item) {
+				switch ($item['type']) {
 					case 'css':
-						Assets::$css[$item['handle']] = $item;
+						static::$css[$item['handle']] = $item;
 						break;
 					case 'js':
-						$item['footer'] = (bool) $footer;
-						Assets::$js[$item['handle']] = $item;
+						$item['footer'] = (bool)$footer;
+						static::$js[$item['handle']] = $item;
 						break;
 				}
 			}
@@ -104,9 +107,9 @@ class Assets_Core {
 
 		return TRUE;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param string $path
 	 * @param string $ext
 	 * @param string $cache_key
@@ -117,25 +120,20 @@ class Assets_Core {
 	{
 		$cache = Cache::instance();
 
-		if ($cache_key === NULL)
-		{
+		if ($cache_key === NULL) {
 			$cache_key = 'assets::merge::' . URL::title($path, '::') . '::' . $ext;
 		}
 
 		$content = $cache->get($cache_key);
 
-		if ($content === NULL)
-		{
-			$files = Kohana::find_file('media', FileSystem::normalize_path($path), $ext, TRUE);
-			if (!empty($files))
-			{
-				foreach ($files as $file)
-				{
+		if ($content === NULL) {
+			$files = \Kohana::find_file('media', FileSystem::normalize_path($path), $ext, TRUE);
+			if (!empty($files)) {
+				foreach ($files as $file) {
 					$content .= file_get_contents($file) . "\n";
 				}
 
-				if (Kohana::$caching === TRUE)
-				{
+				if (\Kohana::$caching === TRUE) {
 					$cache->set($cache_key, $content, $lifetime);
 				}
 			}
@@ -158,32 +156,29 @@ class Assets_Core {
 	public static function css($handle = NULL, $src = NULL, $deps = NULL, $attrs = NULL)
 	{
 		// Return all CSS assets, sorted by dependencies
-		if ($handle === NULL)
-		{
-			return Assets::all_css();
+		if ($handle === NULL) {
+			return static::all_css();
 		}
 
 		// Return individual asset
-		if ($src === NULL)
-		{
-			return Assets::get_css($handle);
+		if ($src === NULL) {
+			return static::get_css($handle);
 		}
 
 		// Set default media attribute
-		if (!isset($attrs['media']))
-		{
+		if (!isset($attrs['media'])) {
 			$attrs['media'] = 'all';
 		}
 
-		return Assets::$css[$handle] = array(
-			'src'   => $src,
-			'deps'  => (array) $deps,
+		return static::$css[$handle] = [
+			'src' => $src,
+			'deps' => (array)$deps,
 			'attrs' => $attrs,
 			'handle' => $handle,
 			'type' => 'css'
-		);
+		];
 	}
-	
+
 	/**
 	 * Get a single CSS asset
 	 *
@@ -192,21 +187,19 @@ class Assets_Core {
 	 */
 	public static function get_css($handle)
 	{
-		if (!isset(Assets::$css[$handle]))
-		{
+		if (!isset(static::$css[$handle])) {
 			return FALSE;
 		}
 
-		$asset = Assets::$css[$handle];
+		$asset = static::$css[$handle];
 
-		if (in_array($asset['src'], Assets::$_css_minify))
-		{
+		if (in_array($asset['src'], static::$_css_minify)) {
 			return NULL;
 		}
 
 		return HTML::style($asset['src'], $asset['attrs']);
 	}
-	
+
 	/**
 	 * Get all CSS assets, sorted by dependencies
 	 *
@@ -214,19 +207,17 @@ class Assets_Core {
 	 */
 	public static function all_css()
 	{
-		if (empty(Assets::$css))
-		{
+		if (empty(static::$css)) {
 			return FALSE;
 		}
-		
-		foreach (Assets::_sort(Assets::$css) as $handle => $data)
-		{
-			$assets[] = Assets::get_css($handle);
+
+		foreach (static::_sort(static::$css) as $handle => $data) {
+			$assets[] = static::get_css($handle);
 		}
-		
+
 		return implode("", $assets);
 	}
-	
+
 	/**
 	 * Remove a CSS asset, or all
 	 *
@@ -235,46 +226,39 @@ class Assets_Core {
 	 */
 	public static function remove_css($handle = NULL)
 	{
-		if ($handle === NULL)
-		{
-			return Assets::$css = array();
+		if ($handle === NULL) {
+			return static::$css = [];
 		}
-		
-		unset(Assets::$css[$handle]);
+
+		unset(static::$css[$handle]);
 	}
-	
+
 	/**
-	 * Javascript wrapper
-	 *
-	 * Gets or sets javascript assets
-	 *
-	 * @param   mixed    Asset name if `string`, sets `$footer` if boolean
-	 * @param   string   Asset source
-	 * @param   mixed    Dependencies
-	 * @param   bool     Whether to show in header or footer
-	 * @return  mixed    Setting returns asset array, getting returns asset HTML
+	 * @param bool $handle
+	 * @param null $src
+	 * @param null $deps
+	 * @param bool $footer
+	 * @return array
 	 */
 	public static function js($handle = FALSE, $src = NULL, $deps = NULL, $footer = FALSE)
 	{
-		if ($handle === TRUE OR $handle === FALSE)
-		{
-			return Assets::all_js($handle);
+		if ($handle === TRUE OR $handle === FALSE) {
+			return static::all_js($handle);
 		}
-		
-		if ($src === NULL)
-		{
-			return Assets::get_js($handle);
+
+		if ($src === NULL) {
+			return static::get_js($handle);
 		}
-		
-		return Assets::$js[$handle] = array(
-			'src'    => $src,
-			'deps'   => (array) $deps,
-			'footer' => (bool) $footer,
+
+		return static::$js[$handle] = [
+			'src' => $src,
+			'deps' => (array)$deps,
+			'footer' => (bool)$footer,
 			'handle' => $handle,
 			'type' => 'js'
-		);
+		];
 	}
-	
+
 	/**
 	 * Get a single javascript asset
 	 *
@@ -283,21 +267,19 @@ class Assets_Core {
 	 */
 	public static function get_js($handle)
 	{
-		if (!isset(Assets::$js[$handle]))
-		{
+		if (!isset(static::$js[$handle])) {
 			return FALSE;
 		}
 
-		$asset = Assets::$js[$handle];
+		$asset = static::$js[$handle];
 
-		if (in_array($asset['src'], Assets::$_js_minify))
-		{
+		if (in_array($asset['src'], static::$_js_minify)) {
 			return NULL;
 		}
 
 		return HTML::script($asset['src']);
 	}
-	
+
 	/**
 	 * Get all javascript assets of section (header or footer)
 	 *
@@ -306,34 +288,29 @@ class Assets_Core {
 	 */
 	public static function all_js($footer = FALSE)
 	{
-		if (empty(Assets::$js))
-		{
+		if (empty(static::$js)) {
 			return FALSE;
 		}
 
-		$assets = array();
+		$assets = [];
 
-		foreach (Assets::$js as $handle => $data)
-		{
-			if ($data['footer'] === $footer)
-			{
+		foreach (static::$js as $handle => $data) {
+			if ($data['footer'] === $footer) {
 				$assets[$handle] = $data;
 			}
 		}
 
-		if (empty($assets))
-		{
+		if (empty($assets)) {
 			return FALSE;
 		}
 
-		foreach (Assets::_sort($assets) as $handle => $data)
-		{
-			$sorted[] = Assets::get_js($handle);
+		foreach (static::_sort($assets) as $handle => $data) {
+			$sorted[] = static::get_js($handle);
 		}
 
 		return implode("", $sorted);
 	}
-	
+
 	/**
 	 * Remove a javascript asset, or all
 	 *
@@ -342,27 +319,23 @@ class Assets_Core {
 	 */
 	public static function remove_js($handle = NULL)
 	{
-		if ($handle === NULL)
-		{
-			return Assets::$js = array();
+		if ($handle === NULL) {
+			return static::$js = [];
 		}
 
-		if ($handle === TRUE OR $handle === FALSE)
-		{
-			foreach (Assets::$js as $handle => $data)
-			{
-				if ($data['footer'] === $handle)
-				{
-					unset(Assets::$js[$handle]);
+		if ($handle === TRUE OR $handle === FALSE) {
+			foreach (static::$js as $handle => $data) {
+				if ($data['footer'] === $handle) {
+					unset(static::$js[$handle]);
 				}
 			}
 
 			return;
 		}
 
-		unset(Assets::$js[$handle]);
+		unset(static::$js[$handle]);
 	}
-	
+
 	/**
 	 * Group wrapper
 	 *
@@ -374,22 +347,20 @@ class Assets_Core {
 	 */
 	public static function group($group, $handle = NULL, $content = NULL, $deps = NULL)
 	{
-		if ($handle === NULL)
-		{
-			return Assets::all_group($group);
+		if ($handle === NULL) {
+			return static::all_group($group);
 		}
 
-		if ($content === NULL)
-		{
-			return Assets::get_group($group, $handle);
+		if ($content === NULL) {
+			return static::get_group($group, $handle);
 		}
 
-		return Assets::$groups[$group][$handle] = array(
+		return static::$groups[$group][$handle] = [
 			'content' => $content,
-			'deps' => (array) $deps,
-		);
+			'deps' => (array)$deps,
+		];
 	}
-	
+
 	/**
 	 * Get a single group asset
 	 *
@@ -399,14 +370,13 @@ class Assets_Core {
 	 */
 	public static function get_group($group, $handle)
 	{
-		if (!isset(Assets::$groups[$group]) OR ! isset(Assets::$groups[$group][$handle]))
-		{
+		if (!isset(static::$groups[$group]) OR !isset(static::$groups[$group][$handle])) {
 			return FALSE;
 		}
 
-		return Assets::$groups[$group][$handle]['content'];
+		return static::$groups[$group][$handle]['content'];
 	}
-	
+
 	/**
 	 * Get all of a groups assets, sorted by dependencies
 	 *
@@ -415,19 +385,17 @@ class Assets_Core {
 	 */
 	public static function all_group($group)
 	{
-		if (!isset(Assets::$groups[$group]))
-		{
+		if (!isset(static::$groups[$group])) {
 			return FALSE;
 		}
 
-		foreach (Assets::_sort(Assets::$groups[$group]) as $handle => $data)
-		{
-			$assets[] = Assets::get_group($group, $handle);
+		foreach (static::_sort(static::$groups[$group]) as $handle => $data) {
+			$assets[] = static::get_group($group, $handle);
 		}
 
 		return implode("", $assets);
 	}
-	
+
 	/**
 	 * Remove a group asset, all of a groups assets, or all group assets
 	 *
@@ -437,114 +405,17 @@ class Assets_Core {
 	 */
 	public static function remove_group($group = NULL, $handle = NULL)
 	{
-		if ($group === NULL)
-		{
-			return Assets::$groups = array();
+		if ($group === NULL) {
+			return static::$groups = [];
 		}
 
-		if ($handle === NULL)
-		{
-			unset(Assets::$groups[$group]);
+		if ($handle === NULL) {
+			unset(static::$groups[$group]);
+
 			return;
 		}
 
-		unset(Assets::$groups[$group][$handle]);
-	}
-	
-	/**
-	 * 
-	 * @param string $cache_dir_path
-	 * @return array
-	 */
-	public static function minify($cache_dir_path = NULL)
-	{
-		Assets::$_js_minify = Assets::$_css_minify = array();
-
-		foreach (Assets::_sort(Assets::$js) as $handle => $js)
-		{
-			Assets::$_js_minify[] = $js['src'];
-		}
-		
-		foreach (Assets::_sort(Assets::$css) as $handle => $css)
-		{
-			Assets::$_css_minify[] = $css['src'];
-		}
-
-		return array(
-			self::_minify(Assets::$_css_minify, 'css', $cache_dir_path),
-			self::_minify(Assets::$_js_minify, 'js', $cache_dir_path)
-		);
-	}
-
-	/**
-	 * 
-	 * @param array $array
-	 * @param string $ext
-	 * @param string $cache_dir_path
-	 * @return string
-	 */
-	protected static function _minify($array, $ext, $cache_dir_path = NULL)
-	{
-		$files = '';
-		$url = NULL;
-
-		foreach ($array as $src)
-		{
-			$files .= $src;
-		}
-
-		$filename = md5($files) . '.' . $ext;
-
-		if ($cache_dir_path === NULL)
-		{
-			$url = PUBLIC_URL . 'cache/';
-			$cache_dir_path = PUBLICPATH . 'cache' . DIRECTORY_SEPARATOR;
-		}
-		
-		if (!is_writable($cache_dir_path))
-		{
-			throw new Kohana_Exception('Unable to write to the cache directory :resource', array(
-				':resource' => $cache_dir_path));
-		}
-
-		$file_path = $cache_dir_path . $filename;
-
-		if (file_exists($file_path))
-		{
-			return $url . $filename;
-		}
-
-		$minified = array();
-		foreach ($array as $src)
-		{
-			$minified[] = file_get_contents($src);
-		}
-
-		switch ($ext)
-		{
-			case 'css':
-				$minified = implode("\n", $minified);
-				$minified = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $minified);
-				$minified = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $minified);
-				break;
-			case 'js':
-				$minified = implode(";\n\n\n", $minified);
-				$minified = Assets::_compress_script($minified);
-				break;
-		}
-
-		$file = file_put_contents($file_path, $minified, LOCK_EX);
-		return $url . $filename;
-	}
-	
-	/**
-	 * 
-	 * @param string $script
-	 * @return string
-	 */
-	protected static function _compress_script($script)
-	{
-		return Assets_Min_JavaScript::minify($script);
+		unset(static::$groups[$group][$handle]);
 	}
 
 	/**
@@ -556,25 +427,18 @@ class Assets_Core {
 	protected static function _sort($assets)
 	{
 		$original = $assets;
-		$sorted = array();
+		$sorted = [];
 
-		while (count($assets) > 0)
-		{
-			foreach ($assets as $key => $value)
-			{
+		while (count($assets) > 0) {
+			foreach ($assets as $key => $value) {
 				// No dependencies anymore, add it to sorted
-				if (empty($assets[$key]['deps']))
-				{
+				if (empty($assets[$key]['deps'])) {
 					$sorted[$key] = $value;
 					unset($assets[$key]);
-				}
-				else
-				{
-					foreach ($assets[$key]['deps'] as $k => $v)
-					{
+				} else {
+					foreach ($assets[$key]['deps'] as $k => $v) {
 						// Remove dependency if doesn't exist, if its dependent on itself, or if the dependent is dependent on it
-						if (!isset($original[$v]) OR $v === $key OR ( isset($assets[$v]) AND in_array($key, $assets[$v]['deps'])))
-						{
+						if (!isset($original[$v]) OR $v === $key OR (isset($assets[$v]) AND in_array($key, $assets[$v]['deps']))) {
 							unset($assets[$key]['deps'][$k]);
 							continue;
 						}
@@ -592,11 +456,16 @@ class Assets_Core {
 
 		return $sorted;
 	}
-	
+
 	/**
 	 * Enforce static usage
-	 */	
-	private function __contruct() {}
-	private function __clone() {}
+	 */
+	private function __contruct()
+	{
+	}
+
+	private function __clone()
+	{
+	}
 
 }

@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php namespace KodiCMS\Core;
 
 /**
  * @package		KodiCMS
@@ -20,7 +20,7 @@ final class Flash
 	 */
 	public static function get($var, $default = NULL)
 	{
-		return Session::instance()->get_once($var, $default);
+		return \Session::instance()->get_once($var, $default);
 	}
 
 	/**
@@ -33,7 +33,7 @@ final class Flash
 	 */
 	public static function set($var, $value)
 	{
-		Session::instance()->set($var, $value);
+		\Session::instance()->set($var, $value);
 	}
 
 	/**
@@ -46,6 +46,6 @@ final class Flash
 	 */
 	public static function clear($var)
 	{
-		Session::instance()->delete($var);
+		\Session::instance()->delete($var);
 	}
 }
