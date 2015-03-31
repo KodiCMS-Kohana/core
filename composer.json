@@ -20,7 +20,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"KodiCMS\\Core\\": 		"vendor\\kodicms\\core\\classes"
+			"KodiCMS\\Core\\": 		"classes"
 		}
 	},
 	"require": {
